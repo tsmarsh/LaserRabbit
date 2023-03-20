@@ -1,78 +1,100 @@
 ---
-swagger: '2.0'
+openapi: 3.0.0
 info:
   version: 0.0.1
   title: LaserRabbit
   description: |
     Is storing data in git viable?
 
+servers:
+  - url: http://localhost:6969
 
-host: localhost:6969
-schemes:
-  - http
-produces:
-  - application/json
-consumes:
-  - application/json
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Form:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+      required:
+        - firstName
+        - lastName
 
 paths:
   /forms:
     get:
+      security:
+        - bearerAuth: []
       description: Returns all forms
       operationId: allForms
       responses:
         200:
           description: Success
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Form'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Form'
+        401:
+          description: JWT probably missing / invalid
 
     post:
+      security:
+        - bearerAuth: []
       description: Create a new form
       operationId: createForm
       parameters:
-        - in: body
-          name: form
+        - name: form
+          in: query
           schema:
-            $ref: '#/definitions/Form'
+           $ref: '#/components/schemas/Form'
           required: true
       responses:
         200:
           description: Effective result
-          schema:
-            $ref: '#/definitions/Form'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
         303:
           description: The url of the new form
+        401:
+          description: JWT probably missing / invalid
 
   /form/{formId}:
     get:
+      security:
+        - bearerAuth: []
       description: Reads this version of a form
       operationId: readForm
-      parameters:
-        - in: path
-          name: formId
-          type: string
-          required: true
       responses:
         200:
-          description: The found form
+          description: Form found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+        404:
+          description: Form missing
+        401:
+          description: JWT probably missing / invalid
+
+      parameters:
+        - name: formId
+          in: query
           schema:
-            $ref: '#/definitions/Form'
-
-
-definitions:
-  Form:
-    type: object
-    properties:
-      id:
-        type: string
-      firstName:
-        type: string
-      lastName:
-        type: string
-
-    required:
-      - firstName
-      - lastName
+            type: string
+          required: true
 
