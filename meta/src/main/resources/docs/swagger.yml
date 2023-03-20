@@ -64,3 +64,6 @@ paths:
 definitions:
   Form:
     type: object
+    properties:
+      body:
+        type: object
