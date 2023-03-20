@@ -52,7 +52,7 @@ paths:
       parameters:
         - in: path
           name: formId
-          type: number
+          type: string
           required: true
       responses:
         200:
@@ -65,5 +65,14 @@ definitions:
   Form:
     type: object
     properties:
-      body:
-        type: object
+      id:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+
+    required:
+      - firstName
+      - lastName
+

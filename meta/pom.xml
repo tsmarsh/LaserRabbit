@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>meta</artifactId>
-    
+
     <build>
         <plugins>
             <plugin>
