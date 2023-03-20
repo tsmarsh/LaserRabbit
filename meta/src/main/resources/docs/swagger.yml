@@ -1,0 +1,66 @@
+---
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: LaserRabbit
+  description: |
+    Is storing data in git viable?
+
+
+host: localhost:6969
+schemes:
+  - http
+produces:
+  - application/json
+consumes:
+  - application/json
+
+paths:
+  /forms:
+    get:
+      description: Returns all forms
+      operationId: allForms
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Form'
+
+    post:
+      description: Create a new form
+      operationId: createForm
+      parameters:
+        - in: body
+          name: form
+          schema:
+            $ref: '#/definitions/Form'
+          required: true
+      responses:
+        200:
+          description: Effective result
+          schema:
+            $ref: '#/definitions/Form'
+        303:
+          description: The url of the new form
+
+  /form/{formId}:
+    get:
+      description: Reads this version of a form
+      operationId: readForm
+      parameters:
+        - in: path
+          name: formId
+          type: number
+          required: true
+      responses:
+        200:
+          description: The found form
+          schema:
+            $ref: '#/definitions/Form'
+
+
+definitions:
+  Form:
+    type: object
