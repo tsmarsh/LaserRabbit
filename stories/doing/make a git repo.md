@@ -1,4 +1,4 @@
-As a user I need my documents to be stored, with versions. 
+As a user I need my documents to be stored, with versions.
 
 Build a http endpoint that creates a repository with a provided name.
 

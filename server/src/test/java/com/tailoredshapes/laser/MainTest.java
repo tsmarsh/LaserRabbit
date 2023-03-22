@@ -2,41 +2,33 @@ package com.tailoredshapes.laser;
 
 import com.tailoredshapes.laserrabbit.api.ApiClient;
 import com.tailoredshapes.laserrabbit.api.ApiException;
-
 import com.tailoredshapes.laserrabbit.api.auth.OAuth;
 import com.tailoredshapes.laserrabbit.api.client.DefaultApi;
 import com.tailoredshapes.laserrabbit.api.model.Form;
 import com.tailoredshapes.stash.Stash;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Any;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.security.Key;
-
 import java.util.List;
 import java.util.UUID;
 
 import static com.tailoredshapes.stash.Stash.stash;
-import static org.junit.jupiter.api.Assertions.*;
-
-import static com.tailoredshapes.underbar.Die.*;
-import static com.tailoredshapes.underbar.UnderBar.*;
-
+import static com.tailoredshapes.underbar.UnderBar.list;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class MainTest {
 
     static UUID uuid = UUID.randomUUID();
     static Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    static String jws = Jwts.builder().setSubject(uuid.toString()).signWith(key).compact();;
+    static String jws = Jwts.builder().setSubject(uuid.toString()).signWith(key).compact();
+    ;
 
     @Mock
     MetaRepository<String, String, Stash> metaRepository = mock(MetaRepository.class);
@@ -47,14 +39,14 @@ class MainTest {
     }
 
     @Test
-    void shouldRejectAListRequestWithoutAuth(){
+    void shouldRejectAListRequestWithoutAuth() {
         DefaultApi api = new DefaultApi();
 
         assertThrows(ApiException.class, () -> api.allForms());
     }
 
     @Test
-    void shouldReturnAnEmptyList() throws Exception{
+    void shouldReturnAnEmptyList() throws Exception {
         Repository<String, Stash> repository = mock(Repository.class);
 
         when(metaRepository.repositoryFor(uuid.toString())).thenReturn(repository);
@@ -69,7 +61,7 @@ class MainTest {
     }
 
     @Test
-    void shouldSaveAForm() throws Exception{
+    void shouldSaveAForm() throws Exception {
         Stash fakeForm = stash("firstName", "Bob", "lastName", "Bobbertson", "id", "twifty");
         Repository<String, Stash> repository = mock(Repository.class);
 

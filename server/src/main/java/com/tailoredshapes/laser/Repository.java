@@ -1,11 +1,11 @@
 package com.tailoredshapes.laser;
 
-import java.time.Instant;
 import java.util.List;
 
-public interface  Repository<I, T> {
+public interface Repository<I, T> {
 
     T create(T form);
+
     T read(I id);
 
     List<T> read();

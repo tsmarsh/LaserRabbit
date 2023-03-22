@@ -35,7 +35,7 @@ paths:
   /forms:
     get:
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       description: Returns all forms
       operationId: allForms
       responses:
@@ -52,7 +52,7 @@ paths:
 
     post:
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       description: Create a new form
       operationId: createForm
       requestBody:
@@ -76,7 +76,7 @@ paths:
   /form/{formId}:
     get:
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       description: Reads this version of a form
       operationId: readForm
       responses:
