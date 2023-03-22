@@ -2,38 +2,48 @@ package com.tailoredshapes.laser;
 
 import com.tailoredshapes.laserrabbit.api.ApiClient;
 import com.tailoredshapes.laserrabbit.api.ApiException;
-import com.tailoredshapes.laserrabbit.api.Configuration;
-import com.tailoredshapes.laserrabbit.api.auth.Authentication;
+
 import com.tailoredshapes.laserrabbit.api.auth.OAuth;
 import com.tailoredshapes.laserrabbit.api.client.DefaultApi;
 import com.tailoredshapes.laserrabbit.api.model.Form;
+import com.tailoredshapes.stash.Stash;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.function.Executable;
+
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.internal.matchers.Any;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.security.Key;
 
 import java.util.List;
+import java.util.UUID;
 
+import static com.tailoredshapes.stash.Stash.stash;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static com.tailoredshapes.underbar.Die.*;
+import static com.tailoredshapes.underbar.UnderBar.*;
 
+import static org.mockito.Mockito.*;
 
 class MainTest {
 
-    static String jws;
+    static UUID uuid = UUID.randomUUID();
+    static Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    static String jws = Jwts.builder().setSubject(uuid.toString()).signWith(key).compact();;
 
-    @BeforeAll
-    static void beforeAll() {
-        Server.start();
+    @Mock
+    MetaRepository<String, String, Stash> metaRepository = mock(MetaRepository.class);
 
-        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-
-        jws = Jwts.builder().setSubject("Joe").signWith(key).compact();
+    @BeforeEach
+    void before() {
+        Server.start(metaRepository);
     }
 
     @Test
@@ -44,24 +54,45 @@ class MainTest {
     }
 
     @Test
-    void shouldReturnAnEmptyList() {
+    void shouldReturnAnEmptyList() throws Exception{
+        Repository<String, Stash> repository = mock(Repository.class);
+
+        when(metaRepository.repositoryFor(uuid.toString())).thenReturn(repository);
+        when(repository.read()).thenReturn(list());
+
         DefaultApi api = new DefaultApi();
         ApiClient client = api.getApiClient();
         OAuth formAuth = (OAuth) client.getAuthentication("bearerAuth");
         formAuth.setAccessToken(jws);
 
-        assertEquals(0, rethrow(api::allForms).size());
+        assertEquals(0, api.allForms().size());
     }
 
-//    @Test
-//    void shouldSaveAForm() {
-//        Form form = new Form();
-//        form.firstName("Bob");
-//        form.lastName("Bobbertson");
-//
-//        Form result = rethrow(() -> api.createForm(form));
-//        Form readResult = rethrow(() -> api.readForm(result.getId()));
-//        List<Form> allResults = rethrow(api::allForms);
-//    }
+    @Test
+    void shouldSaveAForm() throws Exception{
+        Stash fakeForm = stash("firstName", "Bob", "lastName", "Bobbertson", "id", "twifty");
+        Repository<String, Stash> repository = mock(Repository.class);
+
+        when(metaRepository.repositoryFor(uuid.toString())).thenReturn(repository);
+        when(repository.read()).thenReturn(list(fakeForm));
+        when(repository.create(any())).thenReturn(fakeForm);
+        when(repository.read("twifty")).thenReturn(fakeForm);
+
+        DefaultApi api = new DefaultApi();
+        ApiClient client = api.getApiClient();
+        OAuth formAuth = (OAuth) client.getAuthentication("bearerAuth");
+        formAuth.setAccessToken(jws);
+
+        Form form = new Form();
+        form.firstName("Bob");
+        form.lastName("Bobbertson");
+
+        Form result = api.createForm(form);
+        assertEquals(form.getFirstName(), result.getFirstName());
+        Form readResult = api.readForm(result.getId());
+        assertEquals(form.getFirstName(), readResult.getFirstName());
+        List<Form> allResults = api.allForms();
+        assertEquals(1, allResults.size());
+    }
 
 }

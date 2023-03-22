@@ -7,7 +7,7 @@ public class Main {
         var port = Integer.parseInt(System.getenv().containsKey("port") ? System.getenv("port") : "6969");
 
         port(port);
-        Router.route();
+        Router.route(new GitRepository());
         System.out.println("*****PORT: " + port);
     }
 }

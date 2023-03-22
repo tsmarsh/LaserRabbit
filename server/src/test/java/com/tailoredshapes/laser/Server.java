@@ -12,13 +12,13 @@ public class Server {
     public synchronized static boolean isStarted(){
         return started;
     }
-    public synchronized static void start() {
+    public synchronized static void start(MetaRepository repo) {
         var port = 6969;
         logger.info("Starting test server on port " + port);
         if (!isStarted()) {
             started = true;
             port(port);
-            Router.route();
+            Router.route(repo);
         }
     }
 }

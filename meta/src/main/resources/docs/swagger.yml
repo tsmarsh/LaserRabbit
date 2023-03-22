@@ -55,12 +55,12 @@ paths:
         - bearerAuth: []
       description: Create a new form
       operationId: createForm
-      parameters:
-        - name: form
-          in: query
-          schema:
-           $ref: '#/components/schemas/Form'
-          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Form'
       responses:
         200:
           description: Effective result
@@ -93,7 +93,7 @@ paths:
 
       parameters:
         - name: formId
-          in: query
+          in: path
           schema:
             type: string
           required: true
